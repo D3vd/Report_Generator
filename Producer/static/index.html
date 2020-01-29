@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Report Generation</title>
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="text-align:center">Flights Report Creator</h1>
+    </div>
+    <form action="">
+      <div class="container">
+        <h2>Report Format</h2>
+
+        <h2>Contact Information</h2>
+        <div class="form-row">
+          <div class="col">
+            <label for="userName">Name</label>
+            <input
+              type="text"
+              id="userName"
+              placeholder="Your Name"
+              class="form-control"
+              style="width: 70%"
+            />
+          </div>
+          <div class="col">
+            <label for="userEmail">Email ID</label>
+            <input
+              type="email"
+              id="userEmail"
+              placeholder="example@gmail.com"
+              class="form-control"
+              style="width: 70%"
+              aria-describedby="email-help"
+            />
+            <small id="email-help" class="form-text text-muted">
+              Email ID where you want to receive your report
+            </small>
+          </div>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>
