@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -14,13 +13,29 @@ type SuccessResponse struct {
 	StatusCode int       `json:"status_code"`
 }
 
+// ErrorResponse : Generate error response
+type ErrorResponse struct {
+	Message    string `json:"message"`
+	StatusCode int    `json:"status_code"`
+}
+
 // GenerateReportJob ...
 func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 
 	// Check if the request method is POST
 	if req.Method != http.MethodPost {
 		res.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintf(res, "invalid_http_method")
+
+		errorResponse := ErrorResponse{
+			Message:    "Can not perform GET method on this endpoint",
+			StatusCode: 405,
+		}
+
+		jsonData, _ := json.Marshal(errorResponse)
+
+		res.Header().Set("Content-Type", "application/json")
+		res.Write(jsonData)
+
 		return
 	}
 
@@ -42,16 +57,37 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 		QueryBody: queryBody,
 	}
 
-	jsonData, err := json.Marshal(reportJob)
+	jobJSONData, err := json.Marshal(reportJob)
 
 	if err != nil {
-		log.Println("Error while parsing form data")
-		fmt.Fprintf(res, "Error while parsing form data. Please try again.")
+		res.WriteHeader(http.StatusInternalServerError)
+
+		errorResponse := ErrorResponse{
+			Message:    "Error while parsing form data. Please try again.",
+			StatusCode: 500,
+		}
+
+		jsonData, _ := json.Marshal(errorResponse)
+
+		res.Header().Set("Content-Type", "application/json")
+		res.Write(jsonData)
+
 		return
 	}
 
+	// TODO: Add function to push the report job to the queue
+	fmt.Println(string(jobJSONData))
+
+	successResponse := SuccessResponse{
+		Message:    "Successfully added your report to queue! Your report will be generated soon and sent to your email.",
+		Body:       reportJob,
+		StatusCode: 200,
+	}
+
+	successJSONData, _ := json.Marshal(successResponse)
+
 	res.Header().Set("Content-Type", "application/json")
-	res.Write(jsonData)
+	res.Write(successJSONData)
 
 	return
 }
