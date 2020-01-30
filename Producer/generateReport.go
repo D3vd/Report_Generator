@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"strconv"
 )
 
 // SuccessResponse : Generate success response
@@ -24,18 +25,7 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 
 	// Check if the request method is POST
 	if req.Method != http.MethodPost {
-		res.WriteHeader(http.StatusMethodNotAllowed)
-
-		errorResponse := ErrorResponse{
-			Message:    "Can not perform GET method on this endpoint",
-			StatusCode: 405,
-		}
-
-		jsonData, _ := json.Marshal(errorResponse)
-
-		res.Header().Set("Content-Type", "application/json")
-		res.Write(jsonData)
-
+		ReturnErrorResponse(res, "Can not perform GET method on this endpoint", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -60,26 +50,19 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 	jobJSONData, err := json.Marshal(reportJob)
 
 	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
-
-		errorResponse := ErrorResponse{
-			Message:    "Error while parsing form data. Please try again.",
-			StatusCode: 500,
-		}
-
-		jsonData, _ := json.Marshal(errorResponse)
-
-		res.Header().Set("Content-Type", "application/json")
-		res.Write(jsonData)
-
+		ReturnErrorResponse(res, "Error while parsing form data. Please try again.", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Add function to push the report job to the queue
-	fmt.Println(string(jobJSONData))
+	isError, message, jobID := PushJobToQueue(jobJSONData)
+
+	if isError != false {
+		ReturnErrorResponse(res, message, http.StatusInternalServerError)
+		return
+	}
 
 	successResponse := SuccessResponse{
-		Message:    "Successfully added your report to queue! Your report will be generated soon and sent to your email.",
+		Message:    "Successfully added your report to queue! Your report will be generated soon and sent to your email. Your Job ID is " + strconv.FormatUint(jobID, 10),
 		Body:       reportJob,
 		StatusCode: 200,
 	}
@@ -90,4 +73,19 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 	res.Write(successJSONData)
 
 	return
+}
+
+// ReturnErrorResponse : Returns error response with custom message and statuscode
+func ReturnErrorResponse(res http.ResponseWriter, message string, statusCode int) {
+	res.WriteHeader(http.StatusInternalServerError)
+
+	errorResponse := ErrorResponse{
+		Message:    message,
+		StatusCode: statusCode,
+	}
+
+	jsonData, _ := json.Marshal(errorResponse)
+
+	res.Header().Set("Content-Type", "application/json")
+	res.Write(jsonData)
 }
