@@ -19,7 +19,7 @@ func PushJobToQueue(jobJSON []byte) (bool, string, uint64) {
 		return true, errorMessage, 0
 	}
 
-	jobID, err := tube.Put(jobJSON, 0, 0, 5*time.Second)
+	jobID, err := tube.Put(jobJSON, 0, 0, 20*time.Second)
 
 	if err != nil {
 		errorMessage := "Error while pushing to queue."
