@@ -66,7 +66,18 @@ func main() {
 			continue
 		}
 
-		log.Println(hits)
+		// Parse the hits
+		flights, ok := ParseESResultToModel(hits)
+
+		// Release job if it fails
+		if !ok {
+			log.Println("Error while parsing ES Result. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.ReleaseJob(jobID)
+			continue
+		}
+
+		// TODO: Write the flights models to CSV file
+		log.Println(flights)
 
 		// Delete the job if it was successful
 		queue.DeleteJob(jobID)
