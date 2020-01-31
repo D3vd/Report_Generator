@@ -76,8 +76,15 @@ func main() {
 			continue
 		}
 
-		// TODO: Write the flights models to CSV file
-		log.Println(flights)
+		// Write the flights models to CSV file
+		ok = WriteFlightsToCSV(flights)
+
+		// Release the job if it fails
+		if !ok {
+			log.Println("Error while writing the data to CSV. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.ReleaseJob(jobID)
+			continue
+		}
 
 		// Delete the job if it was successful
 		queue.DeleteJob(jobID)
