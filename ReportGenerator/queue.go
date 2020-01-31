@@ -40,14 +40,20 @@ func (q *Queue) GetJobFromQueue() (id uint64, jobBody []byte, jobReady bool) {
 // ReleaseJob : Releases a job back to the queue
 func (q *Queue) ReleaseJob(jobID uint64) {
 	if err := q.tube.Release(jobID, 0, 0); err != nil {
-		log.Println("Couldn't release job id: " + strconv.FormatUint(jobID, 10), err)
+		log.Println("Couldn't release job id: "+strconv.FormatUint(jobID, 10), err)
 	}
 }
-
 
 // CloseQueue : Close beanstalk connection
 func (q *Queue) CloseQueue() {
 	if err := q.tube.Close(); err != nil {
 		log.Println("Error while closing queue Connection", err)
+	}
+}
+
+// DeleteJob : Deletes completes job from the queue
+func (q *Queue) DeleteJob(jobID uint64) {
+	if err := q.tube.Delete(jobID); err != nil {
+		log.Println("Error while deleting job "+strconv.FormatUint(jobID, 10), err)
 	}
 }

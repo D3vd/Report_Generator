@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strconv"
 )
@@ -47,7 +46,16 @@ func main() {
 			continue
 		}
 
-		fmt.Println(ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate))
+		startTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate)
+		endTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.EndDate)
+
+		es.GetDocumentsWithCarrierAndTimeFrame(
+			reportJob.QueryBody.CarrierName,
+			startTime,
+			endTime,
+		)
+
+		queue.DeleteJob(jobID)
 	}
 
 }
