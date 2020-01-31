@@ -1,8 +1,10 @@
 package main
 
-import "time"
-import "encoding/json"
-import "gopkg.in/olivere/elastic.v3"
+import (
+	"encoding/json"
+	"gopkg.in/olivere/elastic.v3"
+	"time"
+)
 
 // ConvertTimeLayoutToISO : Convert UI form Layout to ISO Default
 func ConvertTimeLayoutToISO(date string) (ISO time.Time, ok bool) {

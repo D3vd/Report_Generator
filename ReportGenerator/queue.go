@@ -51,7 +51,7 @@ func (q *Queue) CloseQueue() {
 	}
 }
 
-// DeleteJob : Deletes completes job from the queue
+// DeleteJob : Deletes completed job from the queue
 func (q *Queue) DeleteJob(jobID uint64) {
 	if err := q.tube.Delete(jobID); err != nil {
 		log.Println("Error while deleting job "+strconv.FormatUint(jobID, 10), err)

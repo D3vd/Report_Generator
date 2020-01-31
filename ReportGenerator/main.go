@@ -61,7 +61,7 @@ func main() {
 
 		// Bury the job since the formating is wrong
 		if !ok {
-			log.Println("Error while converting start time layout. Bad Format. Job ID: " + strconv.FormatUint(jobID, 10))
+			log.Println("Error while converting end time layout. Bad Format. Job ID: " + strconv.FormatUint(jobID, 10))
 			queue.BuryJob(jobID)
 			continue
 		}
