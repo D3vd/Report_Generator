@@ -40,21 +40,35 @@ func main() {
 		// Unmarshal report job
 		var reportJob ReportJob
 
+		// Release job if it fails
 		if err := json.Unmarshal(jobBody, &reportJob); err != nil {
 			log.Println("Error while parsing report job body "+strconv.FormatUint(jobID, 10), err)
 			queue.ReleaseJob(jobID)
 			continue
 		}
 
+		// Convert the UI form format to time.Time
 		startTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate)
 		endTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.EndDate)
 
-		es.GetDocumentsWithCarrierAndTimeFrame(
+		// TODO: Make changes here for multiple queries
+		// Query ES with Instructions
+		hits, ok := es.GetDocumentsWithCarrierAndTimeFrame(
 			reportJob.QueryBody.CarrierName,
 			startTime,
 			endTime,
 		)
 
+		// Release jobs if it fails
+		if !ok {
+			log.Println("Error while querying the database. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.ReleaseJob(jobID)
+			continue
+		}
+
+		log.Println(hits)
+
+		// Delete the job if it was successful
 		queue.DeleteJob(jobID)
 	}
 

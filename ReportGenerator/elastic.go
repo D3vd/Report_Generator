@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"gopkg.in/olivere/elastic.v3"
@@ -25,18 +24,28 @@ func (e *ES) Init(port string) (ok bool) {
 }
 
 // GetDocumentsWithCarrierAndTimeFrame : Query only with carrier name and timeframe
-func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.Time, end time.Time) {
+func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.Time, end time.Time) (hits []*elastic.SearchHit, ok bool) {
 
+	// Create query
 	query := elastic.NewBoolQuery()
 
 	query.Filter(elastic.NewMatchQuery("Carrier", carrierName))
-	query.Filter(elastic.NewRangeQuery("timestamp").Format("strict_date_optional_time").From(start).To(end))
+	query.Filter(elastic.NewRangeQuery("timestamp").
+		Format("strict_date_optional_time").
+		From(start).
+		To(end))
 
-	res, err := e.client.Search().Index("flights").Type("doc").Query(query).Size(10000).Do()
+	// Perform the query
+	res, err := e.client.Search().
+		Index("flights").
+		Type("doc").
+		Query(query).
+		Size(10000).
+		Do()
 
 	if err != nil {
-		fmt.Println(err)
+		return res.Hits.Hits, false
 	}
 
-	println(res.TotalHits())
+	return res.Hits.Hits, true
 }
