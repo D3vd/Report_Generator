@@ -47,7 +47,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println(reportJob)
+		fmt.Println(ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate))
 	}
 
 }
