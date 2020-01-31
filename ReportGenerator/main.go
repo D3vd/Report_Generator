@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -28,7 +29,15 @@ func main() {
 			continue
 		}
 
-		fmt.Println(jobID, string(jobBody))
+		var reportJob ReportJob
+
+		if err := json.Unmarshal(jobBody, &reportJob); err != nil {
+			log.Println("Error while parsing report job body"+strconv.FormatUint(jobID, 10), err)
+			ReleaseJob(tube, jobID)
+			continue
+		}
+
+		fmt.Println(reportJob)
 	}
 
 }
