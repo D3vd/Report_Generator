@@ -5,25 +5,24 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-
-	"github.com/beanstalkd/go-beanstalk"
 )
 
 func main() {
 
-	ReportQueuePort := 11301
+	ReportQueuePort := "127.0.0.1:11301"
 
-	// Connect to Beanstalk
-	tube, err := beanstalk.Dial("tcp", "127.0.0.1:"+strconv.Itoa(ReportQueuePort))
+	var queue Queue
 
-	if err != nil {
-		log.Println("Error while connecting to beanstalk at port " + strconv.Itoa(ReportQueuePort) + ". Make sure the queue is active.")
+	if ok := queue.Init(ReportQueuePort); !ok {
+		log.Println("Error while connecting to beanstalk at port " + ReportQueuePort + ". Make sure the queue is active.")
 		return
 	}
 
+	defer queue.CloseQueue()
+
 	for {
 
-		jobID, jobBody, jobReady := GetJobFromQueue(tube)
+		jobID, jobBody, jobReady := queue.GetJobFromQueue()
 
 		if !jobReady {
 			continue
@@ -32,8 +31,8 @@ func main() {
 		var reportJob ReportJob
 
 		if err := json.Unmarshal(jobBody, &reportJob); err != nil {
-			log.Println("Error while parsing report job body"+strconv.FormatUint(jobID, 10), err)
-			ReleaseJob(tube, jobID)
+			log.Println("Error while parsing report job body "+strconv.FormatUint(jobID, 10), err)
+			queue.ReleaseJob(jobID)
 			continue
 		}
 
