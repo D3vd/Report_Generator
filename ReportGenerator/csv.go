@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/csv"
 	"os"
+	"strconv"
 )
 
 // WriteFlightsToCSV : Writes the array of flights to a CSV file
-func WriteFlightsToCSV(flights []Flight) (ok bool) {
+func WriteFlightsToCSV(flights []Flight, jobID uint64) (ok bool) {
 
-	csvFile, err := os.Create("./output/report.csv")
+	csvFile, err := os.Create("./output/report" + strconv.FormatUint(jobID, 10) + ".csv")
 
 	if err != nil {
 		return false

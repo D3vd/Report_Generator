@@ -47,9 +47,24 @@ func main() {
 			continue
 		}
 
-		// Convert the UI form format to time.Time
-		startTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate)
-		endTime, _ := ConvertTimeLayoutToISO(reportJob.QueryBody.EndDate)
+		// Convert the UI form time format to time.Time{}
+		startTime, ok := ConvertTimeLayoutToISO(reportJob.QueryBody.StartDate)
+
+		// Bury the job since the formating is wrong
+		if !ok {
+			log.Println("Error while converting  start time layout. Bad Format. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.BuryJob(jobID)
+			continue
+		}
+
+		endTime, ok := ConvertTimeLayoutToISO(reportJob.QueryBody.EndDate)
+
+		// Bury the job since the formating is wrong
+		if !ok {
+			log.Println("Error while converting start time layout. Bad Format. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.BuryJob(jobID)
+			continue
+		}
 
 		// TODO: Make changes here for multiple queries
 		// Query ES with Instructions
@@ -77,7 +92,7 @@ func main() {
 		}
 
 		// Write the flights models to CSV file
-		ok = WriteFlightsToCSV(flights)
+		ok = WriteFlightsToCSV(flights, jobID)
 
 		// Release the job if it fails
 		if !ok {

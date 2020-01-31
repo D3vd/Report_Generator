@@ -57,3 +57,10 @@ func (q *Queue) DeleteJob(jobID uint64) {
 		log.Println("Error while deleting job "+strconv.FormatUint(jobID, 10), err)
 	}
 }
+
+// BuryJob : Pushes the job to Bury Queue
+func (q *Queue) BuryJob(jobID uint64) {
+	if err := q.tube.Bury(jobID, 0); err != nil {
+		log.Println("Error while Burying job "+strconv.FormatUint(jobID, 10), err)
+	}
+}
