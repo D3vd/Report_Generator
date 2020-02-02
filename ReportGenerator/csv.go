@@ -67,3 +67,13 @@ func WriteFlightsToCSV(flights []Flight, jobID uint64) (ok bool) {
 
 	return true
 }
+
+// DeleteCSVFile : Deletes the CSV report based on the Job ID
+func DeleteCSVFile(jobID uint64) (ok bool) {
+
+	if err := os.Remove("./output/report" + strconv.FormatUint(jobID, 10) + ".csv"); err != nil {
+		return false
+	}
+
+	return true
+}

@@ -115,6 +115,10 @@ func main() {
 			continue
 		}
 
+		if ok := DeleteCSVFile(jobID); !ok {
+			log.Println("Unable to delete report for Job ID : " + strconv.FormatUint(jobID, 10))
+		}
+
 		log.Println(fileURL)
 
 		// Delete the job if it was successful
