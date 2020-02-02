@@ -9,18 +9,27 @@ import (
 func main() {
 
 	ReportQueuePort := "127.0.0.1:11301"
+	NotifierQueuePort := "127.0.0.1:11300"
 	ElasticsearchPort := "127.0.0.1:9200"
 
 	var reportQ Queue
+	var notifierQ Queue
 	var es ES
 	var s3 S3
 
-	// Connect to Beanstalk
+	// Connect to Report Queue
 	if ok := reportQ.Init(ReportQueuePort); !ok {
-		log.Fatalln("Error while connecting to beanstalk at port " + ReportQueuePort + ". Make sure the queue is active.")
+		log.Fatalln("Error while connecting to Report Queue at port " + ReportQueuePort + ". Make sure the queue is active.")
 		return
 	}
 	defer reportQ.CloseQueue()
+
+	// Connect to Notifier Queue
+	if ok := notifierQ.Init(NotifierQueuePort); !ok {
+		log.Fatalln("Error while connecting to Notifier Queue ar port " + NotifierQueuePort + ". Make sure the queue is active.")
+		return
+	}
+	defer notifierQ.CloseQueue()
 
 	// Connect to Elasticsearch
 	if ok := es.Init(ElasticsearchPort); !ok {
