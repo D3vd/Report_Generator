@@ -64,3 +64,13 @@ func (q *Queue) BuryJob(jobID uint64) {
 		log.Println("Error while Burying job "+strconv.FormatUint(jobID, 10), err)
 	}
 }
+
+// PutJob : Adds job to the queue
+func (q *Queue) PutJob(jobJSON []byte) (ok bool) {
+
+	if _, err := q.tube.Put(jobJSON, 0, 0, 5*time.Second); err != nil {
+		return false
+	}
+
+	return true
+}
