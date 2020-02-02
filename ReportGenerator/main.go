@@ -107,13 +107,15 @@ func main() {
 			continue
 		}
 
-		_, ok, message := s3.UploadCSVToS3("./output/report" + strconv.FormatUint(jobID, 10) + ".csv")
+		fileURL, ok, message := s3.UploadCSVToS3(jobID, reportJob.UserInfo.Name)
 
 		if !ok {
 			log.Println(message)
 			queue.ReleaseJob(jobID)
 			continue
 		}
+
+		log.Println(fileURL)
 
 		// Delete the job if it was successful
 		queue.DeleteJob(jobID)

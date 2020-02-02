@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+
+	"github.com/google/uuid"
 )
 
 // S3 structure
@@ -40,15 +43,17 @@ func (s *S3) Init() (ok bool) {
 }
 
 // UploadCSVToS3 : Upload the CSV file to S3
-func (s *S3) UploadCSVToS3(filePath string) (link string, ok bool, message string) {
+func (s *S3) UploadCSVToS3(jobID uint64, userName string) (link string, ok bool, message string) {
 
-	file, err := os.Open(filePath)
+	file, err := os.Open("./output/report" + strconv.FormatUint(jobID, 10) + ".csv")
 
 	if err != nil {
 		return "", false, "Unable to find CSV in File Path"
 	}
 
 	defer file.Close()
+
+	objectKey := "/Reports/" + userName + "/report-" + uuid.New().String() + ".csv"
 
 	fileInfo, _ := file.Stat()
 	fileSize := fileInfo.Size()
@@ -57,7 +62,7 @@ func (s *S3) UploadCSVToS3(filePath string) (link string, ok bool, message strin
 
 	_, err = s3.New(s.session).PutObject(&s3.PutObjectInput{
 		Bucket:        aws.String(s.Bucket),
-		Key:           aws.String(filePath),
+		Key:           aws.String(objectKey),
 		Body:          bytes.NewReader(buffer),
 		ContentLength: aws.Int64(fileSize),
 		ContentType:   aws.String(http.DetectContentType(buffer)),
@@ -67,5 +72,12 @@ func (s *S3) UploadCSVToS3(filePath string) (link string, ok bool, message strin
 		return "", false, "Error while uploading file to S3"
 	}
 
-	return "", true, "Successfully uploaded to S3"
+	return s.GetUploadedFileURL(objectKey), true, "Successfully uploaded to S3"
+}
+
+// GetUploadedFileURL : Generate download URL for the uploaded file
+func (s *S3) GetUploadedFileURL(objectKey string) (fileURL string) {
+
+	fileURL = "https://" + s.Bucket + ".s3." + s.Region + ".amazonaws.com" + objectKey
+	return
 }
