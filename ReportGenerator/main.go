@@ -3,14 +3,20 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"os"
 	"strconv"
 )
 
 func main() {
 
-	ReportQueuePort := "127.0.0.1:11301"
-	NotifierQueuePort := "127.0.0.1:11300"
-	ElasticsearchPort := "127.0.0.1:9200"
+	if ok, missing := EnsureENVSet(); !ok {
+		log.Fatalln(missing + " is not set. Set all ENV to continue")
+		return
+	}
+
+	ReportQueuePort := os.Getenv("REPORT_QUEUE_PORT")
+	NotifierQueuePort := os.Getenv("NOTIFIER_QUEUE_PORT")
+	ElasticsearchPort := os.Getenv("ES_PORT")
 
 	var reportQ Queue
 	var notifierQ Queue
