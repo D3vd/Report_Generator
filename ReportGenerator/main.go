@@ -13,6 +13,7 @@ func main() {
 
 	var queue Queue
 	var es ES
+	var s3 S3
 
 	// Connect to Beanstalk
 	if ok := queue.Init(ReportQueuePort); !ok {
@@ -24,6 +25,11 @@ func main() {
 	// Connect to Elasticsearch
 	if ok := es.Init(ElasticsearchPort); !ok {
 		log.Fatalln("Error while connecting to elasticsearch at port " + ElasticsearchPort + ". Make sure that elasticsearch has been started.")
+		return
+	}
+
+	if ok := s3.Init(); !ok {
+		log.Fatalln("Error while connecting to S3. Check if the credentials are right.")
 		return
 	}
 
@@ -97,6 +103,14 @@ func main() {
 		// Release the job if it fails
 		if !ok {
 			log.Println("Error while writing the data to CSV. Job ID: " + strconv.FormatUint(jobID, 10))
+			queue.ReleaseJob(jobID)
+			continue
+		}
+
+		_, ok, message := s3.UploadCSVToS3("./output/report" + strconv.FormatUint(jobID, 10) + ".csv")
+
+		if !ok {
+			log.Println(message)
 			queue.ReleaseJob(jobID)
 			continue
 		}
