@@ -58,7 +58,7 @@ func main() {
 		// Release job if it fails
 		if err := json.Unmarshal(jobBody, &reportJob); err != nil {
 			log.Println("Error while parsing report job body "+strconv.FormatUint(jobID, 10), err)
-			reportQ.ReleaseJob(jobID)
+			reportQ.BuryJob(jobID)
 			continue
 		}
 
