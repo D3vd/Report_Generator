@@ -35,6 +35,12 @@ func main() {
 			continue
 		}
 
-		log.Println(notifierJob)
+		if ok := SendEmailToUser(notifierJob); !ok {
+			log.Println("Error while sending email.")
+			notifierQ.ReleaseJob(jobID)
+			continue
+		}
+
+		notifierQ.DeleteJob(jobID)
 	}
 }
