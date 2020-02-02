@@ -24,7 +24,7 @@ func (e *ES) Init(port string) (ok bool) {
 }
 
 // GetDocumentsWithCarrierAndTimeFrame : Query only with carrier name and timeframe
-func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.Time, end time.Time) (hits []*elastic.SearchHit, ok bool) {
+func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.Time, end time.Time) (hits []*elastic.SearchHit, totalhits int64, ok bool) {
 
 	// Create query
 	query := elastic.NewBoolQuery()
@@ -44,8 +44,8 @@ func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.
 		Do()
 
 	if err != nil {
-		return res.Hits.Hits, false
+		return res.Hits.Hits, 0, false
 	}
 
-	return res.Hits.Hits, true
+	return res.Hits.Hits, res.TotalHits(), true
 }

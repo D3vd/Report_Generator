@@ -83,7 +83,7 @@ func main() {
 
 		// TODO: Make changes here for multiple queries
 		// Query ES with Instructions
-		hits, ok := es.GetDocumentsWithCarrierAndTimeFrame(
+		hits, totalHits, ok := es.GetDocumentsWithCarrierAndTimeFrame(
 			reportJob.QueryBody.CarrierName,
 			startTime,
 			endTime,
@@ -139,7 +139,7 @@ func main() {
 				Email: reportJob.UserInfo.Email,
 			},
 			Search{
-				TotalHits: 0,
+				TotalHits: totalHits,
 			},
 			Result{
 				URL: fileURL,
