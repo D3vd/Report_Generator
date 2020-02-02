@@ -3,12 +3,18 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"os"
 	"strconv"
 )
 
 func main() {
 
-	NotifierQueuePort := "127.0.0.1:11300"
+	if ok := EnsureENVSet(); !ok {
+		log.Fatalln("Environment variables are not set. Have to set variables before continuing.")
+		return
+	}
+
+	NotifierQueuePort := os.Getenv("NOTIFIER_QUEUE_PORT")
 
 	var notifierQ Queue
 
@@ -21,12 +27,15 @@ func main() {
 
 	for {
 
+		// Get job from the notifier queue
 		jobID, jobBody, jobReady := notifierQ.GetJobFromQueue()
 
+		// If the job is not ready then try again
 		if !jobReady {
 			continue
 		}
 
+		// Unmarshal notifier job
 		var notifierJob NotifierJob
 
 		if err := json.Unmarshal(jobBody, &notifierJob); err != nil {
@@ -35,12 +44,14 @@ func main() {
 			continue
 		}
 
+		// Send email to the user
 		if ok := SendEmailToUser(notifierJob); !ok {
 			log.Println("Error while sending email.")
 			notifierQ.ReleaseJob(jobID)
 			continue
 		}
 
+		// Delete the job from the queue after it has been successfully completed
 		notifierQ.DeleteJob(jobID)
 	}
 }
