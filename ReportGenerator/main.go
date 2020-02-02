@@ -26,7 +26,7 @@ func main() {
 
 	// Connect to Notifier Queue
 	if ok := notifierQ.Init(NotifierQueuePort); !ok {
-		log.Fatalln("Error while connecting to Notifier Queue ar port " + NotifierQueuePort + ". Make sure the queue is active.")
+		log.Fatalln("Error while connecting to Notifier Queue at port " + NotifierQueuePort + ". Make sure the queue is active.")
 		return
 	}
 	defer notifierQ.CloseQueue()
@@ -116,19 +116,52 @@ func main() {
 			continue
 		}
 
+		// Upload the CSV file to S3
 		fileURL, ok, message := s3.UploadCSVToS3(jobID, reportJob.UserInfo.Name)
 
+		// If uploads fails then delete the CSV file and release the JOb
 		if !ok {
 			log.Println(message)
+			DeleteCSVFile(jobID)
 			reportQ.ReleaseJob(jobID)
 			continue
 		}
 
+		// Delete the report csv after it's been successfully uploaded
 		if ok := DeleteCSVFile(jobID); !ok {
 			log.Println("Unable to delete report for Job ID : " + strconv.FormatUint(jobID, 10))
 		}
 
-		log.Println(fileURL)
+		// Create Notifier Job
+		notifierJob := NotifierJob{
+			User{
+				Name:  reportJob.UserInfo.Name,
+				Email: reportJob.UserInfo.Email,
+			},
+			Search{
+				TotalHits: 0,
+			},
+			Result{
+				URL: fileURL,
+			},
+		}
+
+		// Marshal Notifier Job
+		notifierJobJSON, err := json.Marshal(notifierJob)
+
+		// If the Marshalling fails then and release the job
+		if err != nil {
+			log.Println("Error Marshalling Notifier Job")
+			reportQ.ReleaseJob(jobID)
+			continue
+		}
+
+		// Push the Notifier Job to the Notifier Queue
+		if ok := notifierQ.PutJob(notifierJobJSON); !ok {
+			log.Println("Error While pushing job to the Notifier Queue Job ID: " + strconv.FormatUint(jobID, 10))
+			reportQ.ReleaseJob(jobID)
+			continue
+		}
 
 		// Delete the job if it was successful
 		reportQ.DeleteJob(jobID)
