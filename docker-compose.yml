@@ -1,0 +1,17 @@
+version: '3'
+services:
+  producer:
+    build:
+      context: ./Producer/
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    links:
+      - reportQ
+    environment:
+      REPORT_QUEUE_PORT: reportQ:11300
+
+  reportQ:
+    image: schickling/beanstalkd
+    ports:
+      - '11301:11300'
