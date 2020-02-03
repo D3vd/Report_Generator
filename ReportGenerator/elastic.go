@@ -59,6 +59,7 @@ func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (
 		Index("flights").
 		Type("doc").
 		Query(query).
+		Sort("timestamp", true).
 		Size(10000).
 		Do()
 
