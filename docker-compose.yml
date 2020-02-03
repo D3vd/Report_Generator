@@ -42,3 +42,13 @@ services:
       - S3_BUCKET
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
+
+  notifier:
+    build:
+      context: ./Notifier/
+      dockerfile: Dockerfile
+    links:
+      - notifierQ
+    environment:
+      - NOTIFIER_QUEUE_PORT=notifierQ:11300
+      - SENDGRID_API_KEY
