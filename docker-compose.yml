@@ -15,3 +15,30 @@ services:
     image: schickling/beanstalkd
     ports:
       - '11301:11300'
+
+  notifierQ:
+    image: schickling/beanstalkd
+    ports:
+      - '11302:11300'
+
+  elasticsearch:
+    image: elasticsearch:2.4.0
+    ports:
+      - '9200:9200'
+
+  report-generator:
+    build:
+      context: ./ReportGenerator/
+      dockerfile: Dockerfile
+    links:
+      - reportQ
+      - notifierQ
+      - elasticsearch
+    environment:
+      - REPORT_QUEUE_PORT=reportQ:11300
+      - NOTIFIER_QUEUE_PORT=notifierQ:11300
+      - ES_PORT=elasticsearch:9200
+      - S3_REGION
+      - S3_BUCKET
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
