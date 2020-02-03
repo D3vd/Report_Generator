@@ -89,8 +89,8 @@ func main() {
 
 		// TODO: Make changes here for multiple queries
 		// Query ES with Instructions
-		hits, totalHits, ok := es.GetDocumentsWithCarrierAndTimeFrame(
-			reportJob.QueryBody.CarrierName,
+		hits, totalHits, ok := es.GetDocumentsByQuery(
+			reportJob.QueryBody,
 			startTime,
 			endTime,
 		)

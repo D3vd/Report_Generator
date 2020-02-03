@@ -23,17 +23,36 @@ func (e *ES) Init(port string) (ok bool) {
 	return true
 }
 
-// GetDocumentsWithCarrierAndTimeFrame : Query only with carrier name and timeframe
-func (e *ES) GetDocumentsWithCarrierAndTimeFrame(carrierName string, start time.Time, end time.Time) (hits []*elastic.SearchHit, totalhits int64, ok bool) {
+// GetDocumentsByQuery : Query only with carrier name and timeframe
+func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (hits []*elastic.SearchHit, totalhits int64, ok bool) {
 
 	// Create query
 	query := elastic.NewBoolQuery()
 
-	query.Filter(elastic.NewMatchQuery("Carrier", carrierName))
 	query.Filter(elastic.NewRangeQuery("timestamp").
 		Format("strict_date_optional_time").
 		From(start).
 		To(end))
+
+	if qs.CarrierName != "all" {
+		query.Filter(elastic.NewMatchQuery("Carrier", qs.CarrierName))
+	}
+
+	if qs.Delayed != "all" {
+		query.Filter(elastic.NewMatchQuery("FlightDelay", qs.Delayed))
+	}
+
+	if qs.Cancelled != "all" {
+		query.Filter(elastic.NewMatchQuery("Cancelled", qs.Cancelled))
+	}
+
+	if qs.OriginCountry != "all" {
+		query.Filter(elastic.NewMatchQuery("OriginCountry", qs.OriginCountry))
+	}
+
+	if qs.DestCountry != "all" {
+		query.Filter(elastic.NewMatchQuery("DestCountry", qs.DestCountry))
+	}
 
 	// Perform the query
 	res, err := e.client.Search().
