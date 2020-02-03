@@ -44,8 +44,19 @@ func main() {
 			continue
 		}
 
+		// Check if the total hits is zero
+		if notifierJob.Search.TotalHits == 0 {
+			if ok := SendUnsuccessEmailToUser(notifierJob); !ok {
+				log.Println("Error while sending email.")
+				notifierQ.ReleaseJob(jobID)
+				continue
+			}
+			notifierQ.DeleteJob(jobID)
+			continue
+		}
+
 		// Send email to the user
-		if ok := SendEmailToUser(notifierJob); !ok {
+		if ok := SendSuccessEmailToUser(notifierJob); !ok {
 			log.Println("Error while sending email.")
 			notifierQ.ReleaseJob(jobID)
 			continue

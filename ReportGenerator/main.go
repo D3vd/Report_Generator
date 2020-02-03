@@ -87,7 +87,6 @@ func main() {
 			continue
 		}
 
-		// TODO: Make changes here for multiple queries
 		// Query ES with Instructions
 		hits, totalHits, ok := es.GetDocumentsByQuery(
 			reportJob.QueryBody,
@@ -99,6 +98,45 @@ func main() {
 		if !ok {
 			log.Println("Error while querying the database. Job ID: " + strconv.FormatUint(jobID, 10))
 			reportQ.ReleaseJob(jobID)
+			continue
+		}
+
+		// If total hits is zero then don't create CSV or Upload
+		if totalHits == 0 {
+			// Create Notifier Job
+			notifierJobZeroHits := NotifierJob{
+				User{
+					Name:  reportJob.UserInfo.Name,
+					Email: reportJob.UserInfo.Email,
+				},
+				Search{
+					TotalHits: 0,
+				},
+				Result{
+					URL: "",
+				},
+			}
+
+			// Marshal Notifier Job
+			notifierJobJSON, err := json.Marshal(notifierJobZeroHits)
+
+			// If the Marshalling fails then and release the job
+			if err != nil {
+				log.Println("Error Marshalling Notifier Job")
+				reportQ.ReleaseJob(jobID)
+				continue
+			}
+
+			// Push the Notifier Job to the Notifier Queue
+			if ok := notifierQ.PutJob(notifierJobJSON); !ok {
+				log.Println("Error While pushing job to the Notifier Queue Job ID: " + strconv.FormatUint(jobID, 10))
+				reportQ.ReleaseJob(jobID)
+				continue
+			}
+
+			// Delete the job if it was successful
+			reportQ.DeleteJob(jobID)
+
 			continue
 		}
 
