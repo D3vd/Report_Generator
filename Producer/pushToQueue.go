@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/beanstalkd/go-beanstalk"
@@ -10,8 +11,10 @@ import (
 // PushJobToQueue : Pushes Jon JSON to beanstalk queue
 func PushJobToQueue(jobJSON []byte) (bool, string, uint64) {
 
+	ReportJobQueue := os.Getenv("REPORT_QUEUE_PORT")
+
 	// Create connection to Beanstalk
-	tube, err := beanstalk.Dial("tcp", "127.0.0.1:11300")
+	tube, err := beanstalk.Dial("tcp", ReportJobQueue)
 
 	if err != nil {
 		errorMessage := "Error while connecting to beanstalk queue."
