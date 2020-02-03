@@ -35,6 +35,8 @@ func main() {
 			continue
 		}
 
+		log.Println("Reserving Job " + strconv.FormatUint(jobID, 10) + " from Notifier Queue.")
+
 		// Unmarshal notifier job
 		var notifierJob NotifierJob
 
@@ -46,6 +48,7 @@ func main() {
 
 		// Check if the total hits is zero
 		if notifierJob.Search.TotalHits == 0 {
+			log.Println("Job " + strconv.FormatUint(jobID, 10) + " has no hits. Sending unsuccessful email to user.")
 			if ok := SendUnsuccessEmailToUser(notifierJob); !ok {
 				log.Println("Error while sending email.")
 				notifierQ.ReleaseJob(jobID)
@@ -55,6 +58,7 @@ func main() {
 			continue
 		}
 
+		log.Println("Sending Successful Email to User for Job: " + strconv.FormatUint(jobID, 10))
 		// Send email to the user
 		if ok := SendSuccessEmailToUser(notifierJob); !ok {
 			log.Println("Error while sending email.")

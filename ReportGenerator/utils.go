@@ -84,3 +84,35 @@ func EnsureENVSet() (ok bool, missing string) {
 
 	return true, ""
 }
+
+// EnsureESIsSetup : Make sure that ES is setup properly
+func EnsureESIsSetup() (ok bool) {
+	var es ES
+
+	es.Init(os.Getenv("ES_PORT"))
+
+	qs := QueryBody{
+		CarrierName:   "Logstash Airways",
+		Cancelled:     "all",
+		Delayed:       "all",
+		DestCountry:   "all",
+		OriginCountry: "all",
+		StartDate:     "02/13/2020",
+		EndDate:       "02/19/2020",
+	}
+
+	startDate, _ := ConvertTimeLayoutToISO(qs.StartDate)
+	endDate, _ := ConvertTimeLayoutToISO(qs.EndDate)
+
+	_, totalHits, ok := es.GetDocumentsByQuery(qs, startDate, endDate)
+
+	if !ok {
+		return false
+	}
+
+	if totalHits == 0 {
+		return false
+	}
+
+	return true
+}

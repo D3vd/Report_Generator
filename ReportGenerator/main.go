@@ -58,6 +58,8 @@ func main() {
 			continue
 		}
 
+		log.Println("Reserve Job " + strconv.FormatUint(jobID, 10) + " from the Report Queue")
+
 		// Unmarshal report job
 		var reportJob ReportJob
 
@@ -87,6 +89,8 @@ func main() {
 			continue
 		}
 
+		log.Println("Querying ES for Job ID: " + strconv.FormatUint(jobID, 10))
+
 		// Query ES with Instructions
 		hits, totalHits, ok := es.GetDocumentsByQuery(
 			reportJob.QueryBody,
@@ -101,8 +105,11 @@ func main() {
 			continue
 		}
 
+		log.Println("Got " + strconv.FormatInt(totalHits, 10) + " hits for Job " + strconv.FormatUint(jobID, 10))
+
 		// If total hits is zero then don't create CSV or Upload
 		if totalHits == 0 {
+			log.Println("Putting empty notifier job to Queue due to no hits for Job: " + strconv.FormatUint(jobID, 10))
 			// Create Notifier Job
 			notifierJobZeroHits := NotifierJob{
 				User{
@@ -150,6 +157,8 @@ func main() {
 			continue
 		}
 
+		log.Println("Creating CSV file with the ES Results for Job " + strconv.FormatUint(jobID, 10))
+
 		// Write the flights models to CSV file
 		ok = WriteFlightsToCSV(flights, jobID)
 
@@ -159,6 +168,8 @@ func main() {
 			reportQ.ReleaseJob(jobID)
 			continue
 		}
+
+		log.Println("Uploading CSV file to S3 for Job " + strconv.FormatUint(jobID, 10))
 
 		// Upload the CSV file to S3
 		fileURL, ok, message := s3.UploadCSVToS3(jobID, reportJob.UserInfo.Name)
@@ -170,6 +181,8 @@ func main() {
 			reportQ.ReleaseJob(jobID)
 			continue
 		}
+
+		log.Println("Successfully Uploaded Job " + strconv.FormatUint(jobID, 10) + " CSV to S3\n" + fileURL + "\n")
 
 		// Delete the report csv after it's been successfully uploaded
 		if ok := DeleteCSVFile(jobID); !ok {
@@ -199,6 +212,8 @@ func main() {
 			reportQ.ReleaseJob(jobID)
 			continue
 		}
+
+		log.Println("Pushing Job " + strconv.FormatUint(jobID, 10) + " to Notifier Queue\n")
 
 		// Push the Notifier Job to the Notifier Queue
 		if ok := notifierQ.PutJob(notifierJobJSON); !ok {

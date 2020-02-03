@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"strconv"
@@ -64,6 +65,8 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 		ReturnErrorResponse(res, message, http.StatusInternalServerError)
 		return
 	}
+
+	log.Println("Successfully Pushed Job " + strconv.FormatUint(jobID, 10) + " to Report Queue")
 
 	successResponse := SuccessResponse{
 		Message:    "Successfully added your report to queue! Your report will be generated soon and sent to your email. Your Job ID is " + strconv.FormatUint(jobID, 10),

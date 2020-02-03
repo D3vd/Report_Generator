@@ -64,7 +64,7 @@ func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (
 		Do()
 
 	if err != nil {
-		return res.Hits.Hits, 0, false
+		return make([]*elastic.SearchHit, 0), 0, false
 	}
 
 	return res.Hits.Hits, res.TotalHits(), true
