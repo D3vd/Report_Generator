@@ -20,6 +20,30 @@
 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: 'Montserrat', sans-serif;
+      }
+      .form-row {
+        margin-bottom: 30px !important;
+      }
+      h2 {
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+      h1 {
+        font-size: 50px;
+        font-weight: 700;
+        margin: 50px 0;
+      }
+      hr {
+        margin: 30px 0;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -32,138 +56,149 @@
       onsubmit="return validate_form()"
     >
       <div class="container">
-        <h2>Report Format</h2>
+        <h2>Report Query</h2>
         <div class="form-group">
-          <div class="col-lg-12">
-            <label for="carrierName">Carrier Name</label>
-            <select class="form-control" id="carrierName" name="carrier">
-              <option value="all">All</option>
-              <option value="Logstash Airways">Logstash Airways</option>
-              <option value="JetBeats">JetBeats</option>
-              <option value="Kibana Airlines">Kibana Airlines</option>
-              <option value="ES-Air">ES-Air</option>
-            </select>
+          <div class="row">
+            <div class="col-lg-12">
+              <label for="carrierName">Carrier Name</label>
+              <select class="form-control" id="carrierName" name="carrier">
+                <option value="all">All</option>
+                <option value="Logstash Airways">Logstash Airways</option>
+                <option value="JetBeats">JetBeats</option>
+                <option value="Kibana Airlines">Kibana Airlines</option>
+                <option value="ES-Air">ES-Air</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-group">
-          <div class="col-lg-12">
-            <label for="datepicker">Time Frame</label>
-            <div class="input-daterange input-group" id="datepicker">
-              <input
-                autocomplete="off"
-                type="text"
-                class="input-sm form-control"
-                name="start"
-              />
-              <span class="input-group-addon">to</span>
-              <input
-                autocomplete="off"
-                type="text"
-                class="input-sm form-control"
-                name="end"
-              />
+          <div class="row">
+            <div class="col-lg-12">
+              <label for="datepicker">Time Frame</label>
+              <div class="input-daterange input-group" id="datepicker">
+                <input
+                  autocomplete="off"
+                  type="text"
+                  class="input-sm form-control"
+                  name="start"
+                />
+                <span class="input-group-addon">to</span>
+                <input
+                  autocomplete="off"
+                  type="text"
+                  class="input-sm form-control"
+                  name="end"
+                />
+              </div>
             </div>
           </div>
         </div>
         <div class="form-row">
-          <div class="col-lg-6 col-xs-12">
-            <label for="delayed">Delayed</label>
-            <select class="form-control" name="delayed" id="delayed">
-              <option value="all">All</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
-          </div>
-          <div class="col-lg-6 col-xs-12">
-            <label for="cancelled">Cancelled</label>
-            <select class="form-control" name="cancelled" id="cancelled">
-              <option value="all">All</option>
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
+          <div class="row">
+            <div class="col-lg-6 col-xs-12">
+              <label for="delayed">Delayed</label>
+              <select class="form-control" name="delayed" id="delayed">
+                <option value="all">All</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+            <div class="col-lg-6 col-xs-12">
+              <label for="cancelled">Cancelled</label>
+              <select class="form-control" name="cancelled" id="cancelled">
+                <option value="all">All</option>
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-row">
-          <div class="col-lg-6 col-xs-12">
-            <label for="originCountry">Origin Country</label>
-            <select
-              class="form-control"
-              name="originCountry"
-              id="originCountry"
-            >
-              <option value="all">All</option>
-              <option value="it">Italy</option>
-              <option value="us">U.S.A</option>
-              <option value="cn">China</option>
-              <option value="ca">Canada</option>
-              <option value="jp">Japan</option>
-              <option value="ru">Russia</option>
-              <option value="ch">Switzerland</option>
-              <option value="gb">United Kingdom</option>
-              <option value="au">Australia</option>
-              <option value="pl">Poland</option>
-              <option value="at">Austria</option>
-              <option value="in">India</option>
-              <option value="ar">Argentina</option>
-              <option value="za">South Africa</option>
-              <option value="de">Germany</option>
-              <option value="se">Sweden</option>
-              <option value="ec">Ecuador</option>
-              <option value="kr">South Korea</option>
-              <option value="no">Norway</option>
-            </select>
-          </div>
-          <div class="col-lg-6 col-xs-12">
-            <label for="destCountry">Destination Country</label>
-            <select class="form-control" name="destCountry" id="destCountry">
-              <option value="all">All</option>
-              <option value="it">Italy</option>
-              <option value="us">U.S.A</option>
-              <option value="cn">China</option>
-              <option value="ca">Canada</option>
-              <option value="jp">Japan</option>
-              <option value="ru">Russia</option>
-              <option value="ch">Switzerland</option>
-              <option value="gb">United Kingdom</option>
-              <option value="au">Australia</option>
-              <option value="pl">Poland</option>
-              <option value="at">Austria</option>
-              <option value="in">India</option>
-              <option value="ar">Argentina</option>
-              <option value="za">South Africa</option>
-              <option value="de">Germany</option>
-              <option value="se">Sweden</option>
-              <option value="ec">Ecuador</option>
-              <option value="kr">South Korea</option>
-              <option value="no">Norway</option>
-            </select>
+          <div class="row">
+            <div class="col-lg-6 col-xs-12">
+              <label for="originCountry">Origin Country</label>
+              <select
+                class="form-control"
+                name="originCountry"
+                id="originCountry"
+              >
+                <option value="all">All</option>
+                <option value="it">Italy</option>
+                <option value="us">U.S.A</option>
+                <option value="cn">China</option>
+                <option value="ca">Canada</option>
+                <option value="jp">Japan</option>
+                <option value="ru">Russia</option>
+                <option value="ch">Switzerland</option>
+                <option value="gb">United Kingdom</option>
+                <option value="au">Australia</option>
+                <option value="pl">Poland</option>
+                <option value="at">Austria</option>
+                <option value="in">India</option>
+                <option value="ar">Argentina</option>
+                <option value="za">South Africa</option>
+                <option value="de">Germany</option>
+                <option value="se">Sweden</option>
+                <option value="ec">Ecuador</option>
+                <option value="kr">South Korea</option>
+                <option value="no">Norway</option>
+              </select>
+            </div>
+            <div class="col-lg-6 col-xs-12">
+              <label for="destCountry">Destination Country</label>
+              <select class="form-control" name="destCountry" id="destCountry">
+                <option value="all">All</option>
+                <option value="it">Italy</option>
+                <option value="us">U.S.A</option>
+                <option value="cn">China</option>
+                <option value="ca">Canada</option>
+                <option value="jp">Japan</option>
+                <option value="ru">Russia</option>
+                <option value="ch">Switzerland</option>
+                <option value="gb">United Kingdom</option>
+                <option value="au">Australia</option>
+                <option value="pl">Poland</option>
+                <option value="at">Austria</option>
+                <option value="in">India</option>
+                <option value="ar">Argentina</option>
+                <option value="za">South Africa</option>
+                <option value="de">Germany</option>
+                <option value="se">Sweden</option>
+                <option value="ec">Ecuador</option>
+                <option value="kr">South Korea</option>
+                <option value="no">Norway</option>
+              </select>
+            </div>
           </div>
         </div>
+        <hr />
         <h2>Contact Information</h2>
         <div class="form-row">
-          <div class="col-lg-6 col-xs-12">
-            <label for="userName">Name</label>
-            <input
-              type="text"
-              id="userName"
-              placeholder="Your Name"
-              class="form-control"
-              name="userName"
-            />
-          </div>
-          <div class="col-lg-6 col-xs-12">
-            <label for="userEmail">Email ID</label>
-            <input
-              type="email"
-              id="userEmail"
-              placeholder="example@gmail.com"
-              class="form-control"
-              aria-describedby="email-help"
-              name="userEmail"
-            />
-            <small id="email-help" class="form-text text-muted">
-              Email ID where you want to receive your report
-            </small>
+          <div class="row">
+            <div class="col-lg-6 col-xs-12">
+              <label for="userName">Name</label>
+              <input
+                type="text"
+                id="userName"
+                placeholder="Your Name"
+                class="form-control"
+                name="userName"
+              />
+            </div>
+            <div class="col-lg-6 col-xs-12">
+              <label for="userEmail">Email ID</label>
+              <input
+                type="email"
+                id="userEmail"
+                placeholder="example@gmail.com"
+                class="form-control"
+                aria-describedby="email-help"
+                name="userEmail"
+              />
+              <small id="email-help" class="form-text text-muted">
+                Email ID where you want to receive your report
+              </small>
+            </div>
           </div>
         </div>
         <button type="submit" class="btn btn-primary">Generate Report</button>
