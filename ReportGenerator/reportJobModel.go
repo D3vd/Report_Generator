@@ -14,7 +14,11 @@ type UserInfo struct {
 
 // QueryBody : Contains the report instructions
 type QueryBody struct {
-	CarrierName string `json:"carrier"`
-	StartDate   string `json:"start"`
-	EndDate     string `json:"end"`
+	CarrierName   string `json:"carrier"`
+	StartDate     string `json:"start"`
+	EndDate       string `json:"end"`
+	Delayed       string `json:"delayed"`
+	Cancelled     string `json:"cancelled"`
+	OriginCountry string `json:"originCountry"`
+	DestCountry   string `json:"destCountry"`
 }

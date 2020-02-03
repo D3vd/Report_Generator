@@ -37,9 +37,13 @@ func GenerateReportJob(res http.ResponseWriter, req *http.Request) {
 	}
 
 	queryBody := QueryBody{
-		CarrierName: req.Form.Get("carrier"),
-		StartDate:   req.Form.Get("start"),
-		EndDate:     req.Form.Get("end"),
+		CarrierName:   req.Form.Get("carrier"),
+		StartDate:     req.Form.Get("start"),
+		EndDate:       req.Form.Get("end"),
+		Delayed:       req.Form.Get("delayed"),
+		Cancelled:     req.Form.Get("cancelled"),
+		OriginCountry: req.Form.Get("originCountry"),
+		DestCountry:   req.Form.Get("destCountry"),
 	}
 
 	reportJob := ReportJob{

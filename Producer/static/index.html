@@ -181,8 +181,6 @@
         var carrierName = document.forms['reportForm']['carrier'];
         var start = document.forms['reportForm']['start'];
         var end = document.forms['reportForm']['end'];
-        var delayed = document.forms['reportFrom']['delayed'];
-        var cancelled = document.forms['reportFrom']['cancelled'];
         var userName = document.forms['reportForm']['userName'];
         var userEmail = document.forms['reportForm']['userEmail'];
 
@@ -191,9 +189,7 @@
           start.value == '' ||
           end.value == '' ||
           userName.value == '' ||
-          userEmail.value == '' ||
-          delayed.value == '' ||
-          cancelled.value == ''
+          userEmail.value == ''
         ) {
           alert('Enter all the fields');
           return false;
