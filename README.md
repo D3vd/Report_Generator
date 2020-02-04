@@ -52,3 +52,17 @@ A Report Generator service that creates CSV report from sample flight log data b
 3. Before using you have to insert the data into the ES data base. CD into `./DB` and run `import.py` to insert the data into the database.
 
 4. Go to `localhost:8080` to use the app.
+
+### To run with Docker Swarm
+
+```bash
+  docker swarm init
+  docker-compose build
+  docker stack deploy -c ./docker-compose.yml report
+```
+
+**To tear down the stack:**
+
+```bash
+  docker stack rm talk
+```
