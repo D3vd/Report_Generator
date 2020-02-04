@@ -9,6 +9,8 @@ services:
       - '8080:8080'
     links:
       - reportQ
+    deploy:
+      replicas: 3
     environment:
       REPORT_QUEUE_PORT: reportQ:11300
 
@@ -32,6 +34,8 @@ services:
       context: ./ReportGenerator/
       dockerfile: Dockerfile
     image: d3vd/report-gen-main
+    deploy:
+      replicas: 5
     links:
       - reportQ
       - notifierQ
@@ -50,8 +54,20 @@ services:
       context: ./Notifier/
       dockerfile: Dockerfile
     image: d3vd/report-gen-notifier
+    deploy:
+      replicas: 3
     links:
       - notifierQ
     environment:
       - NOTIFIER_QUEUE_PORT=notifierQ:11300
       - SENDGRID_API_KEY
+
+  visualizer:
+    image: dockersamples/visualizer
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - '3000:8080'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
