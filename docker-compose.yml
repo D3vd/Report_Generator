@@ -4,6 +4,7 @@ services:
     build:
       context: ./Producer/
       dockerfile: Dockerfile
+    image: d3vd/report-gen-producer
     ports:
       - '8080:8080'
     links:
@@ -30,6 +31,7 @@ services:
     build:
       context: ./ReportGenerator/
       dockerfile: Dockerfile
+    image: d3vd/report-gen-main
     links:
       - reportQ
       - notifierQ
@@ -47,6 +49,7 @@ services:
     build:
       context: ./Notifier/
       dockerfile: Dockerfile
+    image: d3vd/report-gen-notifier
     links:
       - notifierQ
     environment:
