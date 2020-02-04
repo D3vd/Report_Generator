@@ -25,7 +25,10 @@ services:
       - '11302:11300'
 
   elasticsearch:
-    image: elasticsearch:2.4.0
+    build:
+      context: ./DB/
+      dockerfile: Dockerfile
+    image: d3vd/report-gen-es-db
     ports:
       - '9200:9200'
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -37,10 +38,15 @@ func main() {
 	}
 	defer notifierQ.CloseQueue()
 
-	// Connect to Elasticsearch
-	if ok := es.Init(ElasticsearchPort); !ok {
-		log.Fatalln("Error while connecting to elasticsearch at port " + ElasticsearchPort + ". Make sure that elasticsearch has been started.")
-		return
+	// Connect to Elasticsearch. Keep trying until it is able to connect
+	connected := false
+	for connected == false {
+		if ok := es.Init(ElasticsearchPort); !ok {
+			log.Println("Error while connecting to elasticsearch at port " + ElasticsearchPort + ". Make sure that elasticsearch has been started.")
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		connected = true
 	}
 
 	if ok := s3.Init(); !ok {

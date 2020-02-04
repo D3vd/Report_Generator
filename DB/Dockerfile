@@ -1,15 +1,19 @@
-FROM ubuntu:latest
+FROM elasticsearch:2.4.0
 
-RUN apt-get update
+WORKDIR /
+RUN echo "deb [check-valid-until=no] http://cdn-fastly.deb.debian.org/debian jessie main" > /etc/apt/sources.list.d/jessie.list
+RUN echo "deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list
+RUN sed -i '/deb http:\/\/deb.debian.org\/debian jessie-updates main/d' /etc/apt/sources.list
+RUN apt-get -o Acquire::Check-Valid-Until=false update
+# RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y python3-pip
 
-# Install Java and wget
-RUN apt-get install -y wget
-RUN apt-get update
-RUN apt-get install -y openjdk-8-jdk
+RUN pip3 install elasticsearch
 
-#  Download and run elasticsearch
-RUN wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/2.4.0/elasticsearch-2.4.0.tar.gz
-RUN tar -xvf elasticsearch-2.4.0.tar.gz
-RUN cd elasticsearch-2.4.0
+WORKDIR /tmp/
+COPY . .
 
-CMD [ "/elasticsearch-2.4.0/bin/elasticsearch"]
+RUN chmod +x ./import.sh
+
+CMD [ "./import.sh"]
