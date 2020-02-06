@@ -1,9 +1,12 @@
 package main
 
 import (
+	"log"
 	"time"
 
-	"gopkg.in/olivere/elastic.v3"
+	"context"
+
+	"gopkg.in/olivere/elastic.v7"
 )
 
 // ES : Elasticsearch structure
@@ -13,9 +16,10 @@ type ES struct {
 
 // Init connection to Elasticsearch
 func (e *ES) Init(port string) (ok bool) {
-	client, err := elastic.NewClient(elastic.SetURL("http://" + port))
+	client, err := elastic.NewClient(elastic.SetURL(port))
 
 	if err != nil {
+		log.Println(err)
 		return false
 	}
 
@@ -24,7 +28,7 @@ func (e *ES) Init(port string) (ok bool) {
 }
 
 // GetDocumentsByQuery : Query only with carrier name and timeframe
-func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (hits []*elastic.SearchHit, totalhits int64, ok bool) {
+func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (hits *elastic.SearchResult, totalhits int64, ok bool) {
 
 	// Create query
 	query := elastic.NewBoolQuery()
@@ -61,11 +65,11 @@ func (e *ES) GetDocumentsByQuery(qs QueryBody, start time.Time, end time.Time) (
 		Query(query).
 		Sort("timestamp", true).
 		Size(10000).
-		Do()
+		Do(context.Background())
 
 	if err != nil {
-		return make([]*elastic.SearchHit, 0), 0, false
+		return nil, 0, false
 	}
 
-	return res.Hits.Hits, res.TotalHits(), true
+	return res, res.TotalHits(), true
 }

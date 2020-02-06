@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
+	"reflect"
 	"time"
 
-	"gopkg.in/olivere/elastic.v3"
+	"gopkg.in/olivere/elastic.v7"
 )
 
 // ConvertTimeLayoutToISO : Convert UI form Layout to ISO Default
@@ -22,19 +22,21 @@ func ConvertTimeLayoutToISO(date string) (ISO time.Time, ok bool) {
 }
 
 // ParseESResultToModel : Convert the ES Hits Result to Flights Model
-func ParseESResultToModel(hits []*elastic.SearchHit) (fs []Flight, ok bool) {
+func ParseESResultToModel(hits *elastic.SearchResult) (fs []Flight, ok bool) {
 	var flights []Flight
+	var flight Flight
 
-	for _, hit := range hits {
-		var flight Flight
+	for _, hit := range hits.Each(reflect.TypeOf(flight)) {
 
-		err := json.Unmarshal(*hit.Source, &flight)
-
-		if err != nil {
-			return flights, false
+		if f, ok := hit.(Flight); ok {
+			flights = append(flights, f)
 		}
+		// err := json.Unmarshal(*hit.Source, &flight)
 
-		flights = append(flights, flight)
+		// if err != nil {
+		// 	return flights, false
+		// }
+
 	}
 
 	return flights, true
